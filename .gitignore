@@ -50,3 +50,4 @@ ENV/
 .onyx/
 *.log
 .cache/
+outputs/
