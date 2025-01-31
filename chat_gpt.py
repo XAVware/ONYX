@@ -1,14 +1,16 @@
+"""Analyze a Swift directory with ChatGPT
+
+Run this on a directory containing a Swift project and receive 
+an abstract, analysis, improvements, and notes.
+"""
 import json
-from textwrap import dedent
-from openai import OpenAI
-from pathlib import Path
 import os
+from pathlib import Path
+from openai import OpenAI
 
 def analyze_swift_file(file_path):
-    """
-    Analyze a single Swift file using GPT.
-    """
-    with open(file_path, 'r') as file:
+    """Analyze a single Swift file using GPT."""
+    with open(file_path, 'r', encoding='utf-8') as file:
         swift_code=file.read()
 
     response_format={
@@ -41,7 +43,6 @@ def analyze_swift_file(file_path):
         }
     }
 
-
     prompt=f"""
     You are a Swift programming expert. Your task is to review the following Swift code and provide structured feedback.
 
@@ -64,7 +65,7 @@ def analyze_swift_file(file_path):
             {"role": "user", "content": prompt}
         ],
         response_format=response_format
-        )
+    )
 
     return response.choices[0].message
 
@@ -85,14 +86,11 @@ def analyze_directory(directory_path):
             })
         except Exception as e:
             print(f"Error analyzing {file_path}: {e}")
-
     return results
 
 def save_results_to_markdown(results, output_path):
-    """
-    Save the analysis results to a Markdown file.
-    """
-    with open(output_path, 'w') as md_file:
+    """Save the analysis results to a Markdown file."""
+    with open(output_path, 'w', encoding='utf-8') as md_file:
         md_file.write("# Swift Code Analysis Results\n\n")
         for result in results:
             file_name=os.path.basename(result["file"])
@@ -101,7 +99,7 @@ def save_results_to_markdown(results, output_path):
             md_file.write(f"## {file_name}\n\n")
             md_file.write("### Abstract:\n")
             md_file.write(f"{analysis.get('abstract', 'N/A')}\n\n")
-            
+
             md_file.write("### Analysis:\n")
             md_file.write(f"{analysis.get('analysis', 'N/A')}\n\n")
 
@@ -109,12 +107,11 @@ def save_results_to_markdown(results, output_path):
             for improvement in analysis.get("improvements", []):
                 md_file.write(f"- {improvement}\n")
             md_file.write("\n")
-            
+
             md_file.write("### Notes:\n")
             md_file.write(f"{analysis.get('notes', 'N/A')}\n\n")
             md_file.write("---\n\n")
     print(f"Results saved to {output_path}")
-
 
 def save_results_to_json(results, output_path):
     """
@@ -134,17 +131,18 @@ def save_results_to_json(results, output_path):
             print(f"Error decoding JSON for file {result['file']}: {e}")
             formatted_results.append(result)
 
-    with open(output_path, 'w') as json_file:
-        json.dump(formatted_results, json_file, indent=4) 
+    with open(output_path, 'w', encoding='utf-8') as json_file:
+        json.dump(formatted_results, json_file, indent=4)
 
     print(f"Results saved to {output_path}")
 
 
 if __name__ == "__main__":
-    input_directory="../Frameworks/Swift/AuthApp/AuthApp/Features/Alerts"  # Replace with your directory
-    output_file="./swift_analysis_results.json"
-    output_markdown_file="./swift_analysis_results.md"
+    INPUT_DIRECTORY="../Frameworks/Swift/AuthApp/AuthApp/Features/Alerts"
+    OUTPUT_FILE="./swift_analysis_results.json"
+    OUTPUT_MARKDOWN_FILE="./swift_analysis_results.md"
 
-    results=analyze_directory(input_directory)
-    save_results_to_json(results, output_file)
-    save_results_to_markdown(results, output_markdown_file)
+    results=analyze_directory(INPUT_DIRECTORY)
+    print(type(results))
+    save_results_to_json(results, OUTPUT_FILE)
+    save_results_to_markdown(results, OUTPUT_MARKDOWN_FILE)
