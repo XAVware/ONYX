@@ -51,3 +51,5 @@ ENV/
 *.log
 .cache/
 outputs/
+prompts.json
+response_formats.json
