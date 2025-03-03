@@ -248,7 +248,7 @@ def main():
     parser.add_argument("app_idea", nargs="?", help="The app idea to plan")
     args = parser.parse_args()
     
-    workflow = AppPlanningWorkflow(project_dir='/Users/ryan/Documents/Documents/XAVware/Projects/Test')
+    workflow = AppPlanningWorkflow(project_dir='/ONYX/Projects/Test')
     
     if not args.app_idea:
         console.print("[bold yellow]Please provide an app idea.[/bold yellow]")

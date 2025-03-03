@@ -47,7 +47,6 @@ class Claude:
         self.client = Anthropic()
         self.model = "claude-3-7-sonnet-20250219"
         self.max_tokens = 25000
-        self.response_directory = "/Users/ryan/Documents/Documents/XAVware/.claude_responses"
         
         # Initialize rate limiter and error handler
         self.rate_limiter = RateLimiter(requests_per_minute=3, burst_limit=3)

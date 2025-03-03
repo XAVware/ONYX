@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.markdown import Markdown
 import AppPlanningWorkflow
-
+import argparse
 from ResultProcessor import ResultProcessor
 from pathlib import Path
 from Claude import Claude
@@ -245,7 +245,17 @@ def develop_project_files(project_dir, architecture_path, mvp_path, diagrams_pat
     
     return result
 
+def parse_arguments():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(description="ONYX")
+    parser.add_argument("app_idea", nargs="?", help="App idea to develop (e.g., 'An app to track my fitness')")
+    parser.add_argument("--project-name", "-n", help="Name for the project")
+    parser.add_argument("--project-dir", "-d", help="Project directory (default: Projects/[ProjectName])")
+    parser.add_argument("--root-dir", "-r", help="Root directory for projects")
+    return parser.parse_args()
+
 def main():
+    # Set up logging
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -254,14 +264,56 @@ def main():
     logger = logging.getLogger("appplanner")
     console = Console()
 
-    root_dir = Path(f"/Users/ryan/Documents/Documents/XAVware/Projects")
-    project_name = "Fitty"
-    project_dir = Path(f"{root_dir}/{project_name}")
-     
+    # Parse command-line arguments
+    args = parse_arguments()
+    
+    # Get app idea
+    app_idea = args.app_idea
+    if not app_idea:
+        console.print("[bold yellow]Please provide an app idea.[/bold yellow]")
+        app_idea = input("Enter your app idea: ")
+    
+    # Get project name
+    if args.project_name:
+        project_name = args.project_name
+    else:
+        # Extract a reasonable project name from the app idea
+        words = app_idea.split()
+        if len(words) <= 3:
+            # Use the whole idea if it's short
+            project_name = ''.join(word.capitalize() for word in words)
+        else:
+            # Use first 3 words if the idea is long
+            project_name = ''.join(word.capitalize() for word in words[:3])
+        
+        # Remove non-alphanumeric characters
+        project_name = ''.join(c for c in project_name if c.isalnum())
+        
+        # Confirm with user
+        console.print(f"[yellow]Suggested project name: [/yellow][bold cyan]{project_name}[/bold cyan]")
+        user_input = input("Use this name? (Press Enter to accept, or type a different name): ")
+        if user_input.strip():
+            project_name = user_input.strip()
+    
+    # Set up project directory
+    if args.project_dir:
+        project_dir = Path(args.project_dir)
+    else:
+        if args.root_dir:
+            root_dir = Path(args.root_dir)
+        else:
+            # Default to user's Documents folder
+            import os
+            home_dir = os.path.expanduser("~")
+            root_dir = Path(f"{home_dir}/ONYX/Projects")
+        
+        project_dir = root_dir / project_name
+    
     # Create project directory if it doesn't exist
     project_dir.mkdir(parents=True, exist_ok=True)
-    app_idea = "An app to track my fitness."
-
+    console.print(f"[green]Project directory: [/green][cyan]{project_dir}[/cyan]")
+     
+    # Run workflow
     workflow = AppPlanningWorkflow.AppPlanningWorkflow(project_dir)
     result = workflow.run_workflow(app_idea)
 
