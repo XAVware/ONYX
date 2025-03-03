@@ -1,16 +1,11 @@
-"""Build XCode Project
+"""Utility for building Xcode projects and processing build output."""
 
-Run 'python3 build_codeproj.py <directory_path> to build an XCode project 
-and return any errors or warnings.
-"""
 import subprocess
 from pathlib import Path
 from typing import List
 from dataclasses import dataclass
 import re
-import sys
 import json
-import argparse
 
 @dataclass
 class BuildMessage:
@@ -41,10 +36,6 @@ class XcodeBuilder:
     def __init__(self, project_path: str):
         """
         Initialize XcodeBuilder with project path
-        
-        Args:
-            project_path: Path to directory containing .xcodeproj
-            log_level: Logging level (default: logging.INFO)
         """
         self.project_path = Path(project_path)
         # Find project
@@ -63,7 +54,7 @@ class XcodeBuilder:
 
         while i < len(lines):
             line = lines[i].strip()
-            # Look for lines containing error: or warning:
+
             if ': error:' in line or ': warning:' in line:
                 # Try to parse the standard Xcode format
                 match = re.match(r'(.*?):(\d+)(?::\d+)?: (warning|error): (.*)', line)
@@ -110,14 +101,6 @@ class XcodeBuilder:
               clean: bool = True) -> BuildOutput:
         """
         Build the Xcode project
-        
-        Args:
-            configuration: Build configuration (default: "Debug")
-            destination: Build destination (default: iOS Simulator)
-            clean: Whether to clean before building (default: True)
-            
-        Returns:
-            BuildOutput object containing result and messages
         """
         # Construct xcodebuild command
         cmd = [
@@ -167,24 +150,3 @@ class XcodeBuilder:
             messages=messages,
             raw_output=combined_output
         )
-
-def main():
-    """Main"""
-    parser = argparse.ArgumentParser(description='Build Xcode project')
-    parser.add_argument('project_path', help='Path to the Xcode project directory')
-    args = parser.parse_args()
-
-    # try:
-    builder = XcodeBuilder(args.project_path)
-    print(f"\nBuilding {builder.project_name}...")
-    result = builder.build()
-    output = {
-            "result": result.result,
-            "messages": [msg.to_dict() for msg in result.messages]
-        }
-    print(json.dumps(output, indent=2))
-    sys.exit(0 if result.result == "SUCCESS" else 1)
-
-if __name__ == "__main__":
-    print("\n-- Make sure xcbeutify is installed --\n")
-    main()

@@ -1,61 +1,59 @@
 # ONYX
-Draft project for analyzing Swift code files in a directory. It uses OpenAI's GPT API to generate structured suggestions for code improvements, detailed analysis, and notes. The output is saved as both a JSON file and a Markdown.
 
-## System Requirements
-- Python 3.8 or higher
-- An OpenAI API key
+ONYX is an advanced toolchain that uses Anthropic's Claude Sonnet 3.7 and OpenAI to automate and accelerate iOS app development. It creates a complete workflow from initial app idea to working Xcode project with minimal human intervention.
 
-## Python Dependencies
-Install the required Python packages:
+WARNING: Running this will cost over $10 in Anthropic fees.
 
-```zsh
-pip install openai
-```
+## Features
+
+- **App Planning Workflow**: Generate business plans, user stories, and MVP features from a simple app idea
+- **Architecture Design**: Create system diagrams, class structures, and data models
+- **Swift Code Generation**: Transform architecture plans into working Swift code
+- **Build & Fix**: Automatically build Xcode projects and fix compilation errors
+- **Documentation**: Generate beautiful architectural documentation with Mermaid diagrams
 
 ## Getting Started
 
-1. Clone this repository to your local machine:
-```zsh
-git clone https://github.com/xavware/ONYX.git
-cd ONYX
-```
+### Prerequisites
 
-2. Setup your virtual environment
-```zsh
-python -m venv venv
-source venv/bin/activate  # On macOS/Linux
-venv\Scripts\activate     # On Windows
-```
+- Python 3.8+
+- Anthropic API key (Claude 3.7 Sonnet)
+- Xcode (for build and deployment)
+- Required Python packages (see Installation)
 
-3. Install the dependencies
-```zsh
-pip install -r requirements.txt
-```
+### Installation
 
-### Set Up OpenAI API Key
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/XAVware/ONYX.git
+   cd xavware
+   ```
 
-Set your OpenAI API key as an environment variable:
-```zsh
-export OPENAI_API_KEY=your_openai_api_key
-```
-Alternatively, modify the script to include the API key directly:
-
-```python
-import openai
-openai.api_key = "your_openai_api_key"
-```
+2. Install required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   
+3. Create a `.env` file in the root directory with your Anthropic and OpenAI API keys:
+   ```
+   ANTHROPIC_API_KEY=your_api_key
+   OPENAI_API_KEY=your_api_key
+   ```
 
 ### Usage
-Edit the input_directory in the script to point to your directory of Swift files. The script will recursively analyze all .swift files within the specified directory.:
 
-```python
-input_directory = "../path/to/swift/files"
-```
-Run the script:
-```zsh
-    python script.py
+#### Basic App Creation
+
+To create a new app from a simple idea:
+
+```bash
+python3 main.py "An app to track my fitness"
 ```
 
-After execution, the results will be saved in:
-    swift_analysis_results.json: A structured JSON file.
-    swift_analysis_results.md: A human-readable Markdown file.
+This will:
+1. Generate a business plan
+2. Create user stories and backlog
+3. Define MVP features
+4. Design system architecture with diagrams
+5. Generate Swift code for all components
+6. Build the Xcode project and fix errors (as long as a valid XCode project exists at the project directory)
