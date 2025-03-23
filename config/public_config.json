@@ -1,0 +1,13 @@
+{
+    "directories": {
+        "root": "~/ONYX/",
+        "projects": "~/ONYX/Projects",
+        "logging": "~/ONYX/Logs",
+        "resources": "~/ONYX/Resources"
+    },
+    "xcode": {
+        "development_team_id": "your_team_id",
+        "bundle_id_prefix": "com.bundle.id",
+        "project_template_path": "path/to/template/xcode/proj"
+    }
+}

@@ -49,8 +49,7 @@ ENV/
 # Onyx specific
 .onyx/
 *.log
-.cache/
-outputs/
-prompts.json
-response_formats.json
+__pycache__/
 resources/
+config.json
+prompts/

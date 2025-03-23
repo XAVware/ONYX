@@ -57,3 +57,8 @@ This will:
 4. Design system architecture with diagrams
 5. Generate Swift code for all components
 6. Build the Xcode project and fix errors (as long as a valid XCode project exists at the project directory)
+
+
+Also
+
+brew install xcodegen
