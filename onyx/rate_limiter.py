@@ -21,12 +21,6 @@ class RateLimiter:
         self.lock = threading.Lock()
         self.waiting = False
 
-    def register_token_usage(self, token_count: int):
-        """Register token usage for tracking."""
-        with self.lock:
-            now = datetime.now()
-            self.token_usage.append((now, token_count))
-
     def wait_if_needed(self):
         """Wait if needed to stay under the rate limit."""
         with self.lock:
@@ -40,10 +34,6 @@ class RateLimiter:
 
             current_requests = len(self.request_times)
             current_tokens = sum(count for _, count in self.token_usage)
-
-            logger.info(
-                f"Current usage: {current_requests}/{self.rpm} requests, {current_tokens}/{self.token_limit} tokens in last minute"
-            )
 
             wait_time = 0
             reason = ""

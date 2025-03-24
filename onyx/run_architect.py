@@ -48,11 +48,11 @@ def generate_skeleton(mvp_content, diagrams_content, project_name):
     return architecture_response
 
 
-def run_architect(project_name: str):
-    root_dir = Path(config.directories.projects)
-    project_dir = Path(root_dir.expanduser() / project_name)
-    planning_dir = Path(project_dir / "planning")
-
+def run_architect(app_dir: Path):
+    # root_dir = Path(config.directories.projects)
+    # project_dir = Path(root_dir.expanduser() / project_name)
+    planning_dir = Path(app_dir / "planning")
+    project_name = app_dir.name
     # When the architect workflow begins, the MVP document should exist
     mvp_path = Path(planning_dir / "MVP.md").expanduser()
 
@@ -70,7 +70,7 @@ def run_architect(project_name: str):
         with open(mvp_path, "r", encoding="utf-8") as file:
             mvp_content = file.read()
         diagrams_response = create_architecture_diagrams(mvp_content, project_name)
-        # Save raw response
+        
         with open(diagrams_path, "w", encoding="utf-8") as file:
             file.write(diagrams_response)
         logger.info(f"Architecture diagrams saved to {diagrams_path}")
@@ -83,8 +83,8 @@ def run_architect(project_name: str):
 
     logger.info("Generated mermaid diagrams for documentation.")
 
-    setup_mermaid_docs(project_dir)
-    serve_docs(project_dir)
+    setup_mermaid_docs(app_dir)
+    serve_docs(app_dir)
     # END Diagrams
 
     # START Skeleton
@@ -110,11 +110,9 @@ def run_architect(project_name: str):
         # Save raw response
         with open(skeleton_md_path, "w", encoding="utf-8") as file:
             file.write(skeleton_response)
-
+    
     save_code_from_md(
-        markdown=skeleton_response, 
-        language="swift", 
-        output_dir=Path(project_dir / project_name)
+        markdown=skeleton_response, language="swift", output_dir=app_dir
     )
     # END Skeleton
 

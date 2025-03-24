@@ -20,15 +20,12 @@ def get_all_swift_code(project_dir: Path) -> str:
             print(f"Could not read {file}: {e}")
     return "\n\n".join(all_code)
 
-def fix(project_name: str, errors: List[BuildMessage]):
-    root_dir = Path(config.directories.projects)
-    project_name = project_name
-    project_dir = Path(root_dir.expanduser() / project_name)
+def fix(app_dir: Path, errors: List[BuildMessage]):
     errors = filter(lambda x: x.type == "error", errors)
     for err in errors:
         logger.error(err.file + "\n" + err.message + "\n")
 
-    all_code = get_all_swift_code(project_dir)
+    all_code = get_all_swift_code(app_dir)
 
     # Send to AI
     logger.info("Fixing Errors...")
@@ -45,7 +42,7 @@ def fix(project_name: str, errors: List[BuildMessage]):
     save_code_from_md(
         markdown=response,
         language="swift",
-        output_dir=Path(project_dir / project_name),
+        output_dir=app_dir,
     )
 
 if __name__ == "__main__":
@@ -53,7 +50,7 @@ if __name__ == "__main__":
     from pathlib import Path
 
     project_name = "SoFit"
-    project_path = str(Path(config.directories.projects).expanduser() / project_name)
+    project_path = Path(config.directories.projects).expanduser() / project_name
 
     iteration = 0
     while True:
@@ -65,5 +62,5 @@ if __name__ == "__main__":
             print("✅ Build succeeded with no errors.")
             break
 
-        fix(project_name, actual_errors)
+        fix(project_path, actual_errors)
         iteration += 1

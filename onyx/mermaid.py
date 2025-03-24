@@ -69,11 +69,11 @@ extra_javascript:
                 )
 
 
-def setup_mermaid_docs(project_dir):
+def setup_mermaid_docs(project_dir: Path):
     """Setup proper mermaid support in the docs directory."""
 
     # Ensure project_dir is a Path object
-    project_dir = Path(project_dir)
+    # project_dir = Path(project_dir)
 
     # Make sure mkdocs configuration exists
     ensure_mkdocs_config(project_dir)
@@ -214,10 +214,10 @@ def build_docs(project_dir):
         return False
 
 
-def serve_docs(project_dir):
+def serve_docs(project_dir: Path):
     """Serve the mkdocs documentation in background mode."""
     console = Console()
-    project_dir = Path(project_dir)
+    # project_dir = Path(project_dir)
 
     # First, check if mkdocs is installed
     if not check_mkdocs_installed():

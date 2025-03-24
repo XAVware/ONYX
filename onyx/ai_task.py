@@ -37,19 +37,14 @@ class Claude:
             headers = {"anthropic-beta": "output-128k-2025-02-19"}
             tokens = 128000
 
-        estimated_tokens = (
-            estimate_tokens(prompt) + estimate_tokens(system_prompt) + tokens
-        )
-        self.rate_limiter.register_token_usage(estimated_tokens)
-
         response = ""
 
         try:
             with Anthropic().messages.stream(
                 model="claude-3-7-sonnet-20250219",
                 max_tokens=tokens,
-                temperature=1,
-                thinking={"type": "enabled", "budget_tokens": 24000},
+                temperature=0,
+                # thinking={"type": "enabled", "budget_tokens": 24000},
                 system=system_prompt,
                 messages=[{"role": "user", "content": prompt}],
                 extra_headers=headers,

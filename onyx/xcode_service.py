@@ -70,7 +70,7 @@ def parse_build_messages(output: str) -> List[BuildMessage]:
 
 
 def build_xcode_project(
-    project_dir: str,
+    project_dir: Path,
     configuration: str = "Debug",
     destination: str = "platform=iOS Simulator,name=iPhone 16 Pro",
     clean: bool = True,
@@ -78,12 +78,11 @@ def build_xcode_project(
 
 ) -> List[BuildMessage]:
     """Build the Xcode project"""
-    project_path = Path(project_dir)
-    xcodeproj_files = list(project_path.glob("*.xcodeproj"))
+    xcodeproj_files = list(project_dir.glob("*.xcodeproj"))
     if not xcodeproj_files:
         raise ValueError(f"No .xcodeproj file found in {project_dir}")
 
-    project_name = xcodeproj_files[0].stem
+    project_name = project_dir.name
 
     cmd = [
         "xcodebuild",
@@ -108,7 +107,7 @@ def build_xcode_project(
         cmd, 
         capture_output=True, 
         text=True, 
-        cwd=str(project_path), 
+        cwd=str(project_dir), 
         check=False
     )
 
@@ -121,8 +120,9 @@ def build_xcode_project(
     return messages
 
 
-def copy_template_xcode_project(project_dir, project_name):
+def copy_template_xcode_project(project_dir: Path):
     """Copy the Xcode project template and rename necessary files."""
+    project_name = project_dir.name
     if not TEMPLATE_PATH.exists():
         logger.error(f"Template Xcode project not found at {TEMPLATE_PATH}")
         exit(1)
@@ -252,52 +252,10 @@ def rename_entry_point(project_dir, project_name):
         logger.info(f"Renamed entry point file to {new_entry_point}")
 
 
-# def ensure_project_scheme(project_dir, project_name):
-#     """Ensure the Xcode project has a valid scheme."""
-#     xcodeproj_path = project_dir / f"{project_name}.xcodeproj"
-
-#     # Check if scheme exists
-#     cmd = ["xcodebuild", "-project", str(xcodeproj_path), "-list"]
-
-#     logger.info(f"Checking schemes in project: {xcodeproj_path.name}")
-
-#     try:
-#         result = subprocess.run(cmd, capture_output=True, text=True, check=False)
-
-#         # If scheme doesn't exist or command failed, create it
-#         if result.returncode != 0 or project_name not in result.stdout:
-#             logger.info(f"Creating scheme for {project_name}...")
-
-#             create_cmd = [
-#                 "xcodebuild",
-#                 "-project",
-#                 str(xcodeproj_path),
-#                 "-scheme",
-#                 project_name,
-#                 "-create",
-#             ]
-
-#             create_result = subprocess.run(
-#                 create_cmd, capture_output=True, text=True, check=False
-#             )
-
-#             if create_result.returncode != 0:
-#                 logger.error(f"Failed to create scheme: {create_result.stderr}")
-#                 return False
-
-#             logger.info(f"Created scheme for {project_name}")
-#         else:
-#             logger.info(f"Scheme for {project_name} already exists")
-
-#         return True
-#     except Exception as e:
-#         logger.error(f"Error checking/creating scheme: {str(e)}")
-#         return False
-
-
-def setup_xcode_project(project_name, project_dir):
+def setup_xcode_project(project_dir: Path):
     """Set up the Xcode project with the given name at the specified directory."""
     logger.info("Setting up Xcode project...")
+    project_name = project_dir.name
     try:
         xcodeproj_path = project_dir / f"{project_name}.xcodeproj"
         if xcodeproj_path.exists():
@@ -307,7 +265,7 @@ def setup_xcode_project(project_name, project_dir):
             return project_dir
 
         try:
-            copy_template_xcode_project(project_dir, project_name)
+            copy_template_xcode_project(project_dir)
         except Exception as e:
             logger.error(f"Error copying template: {str(e)}")
             return None
@@ -321,18 +279,16 @@ def setup_xcode_project(project_name, project_dir):
         return None
 
 
-def create_project(project_dir, project_name, build: bool = True):
+def create_project(app_dir: Path, build: bool = True):
     """Create a new Xcode project with the given name at the specified directory."""
-    project_dir = Path(project_dir)
-    result_dir = setup_xcode_project(project_name, project_dir)
+    # project_dir = Path(app_dir)
+    result_dir = setup_xcode_project(app_dir)
 
     if result_dir and build:
         logger.info("Building the project...")
-        result = build_xcode_project(str(project_dir))
+        result = build_xcode_project(app_dir)
         if not any(msg.type == "error" for msg in result):
-            logger.info(
-                f"Project setup and build completed successfully at: {project_dir}"
-            )
+            logger.info(f"Project setup and build completed successfully at: {app_dir}")
             return True
         else:
             logger.error("Project setup completed with errors.")
