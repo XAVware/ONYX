@@ -128,7 +128,6 @@ def main():
 
     run_architect(app_dir)
     
-    # output_dir = Path(app_dir / project_name)
         
     with open(
         Path(app_dir / "planning" / "ArchitectureDiagrams.md"), "r", encoding="utf-8"
@@ -152,11 +151,15 @@ def main():
                     break
 
         logger.info(f"Developing {layer} files...")
-        additional_rules = ""
+        system_prompt, prompt = get_prompt_and_system(
+            "developer",
+            "engineer",
+            layer=layer,
+            diagrams_content=diagrams_content,
+            file_content=grouped_files[layer],
+        )
         
-        (sys_prompt, base_prompt) = get_dev_prompts(layer, diagrams_content, grouped_files[layer], additional_rules)
-        
-        develop_layers(base_prompt, sys_prompt, app_dir)
+        develop_layers(prompt, system_prompt, app_dir)
 
     logger.info("Fixing build errors...")
     # output_dir = str(Path(config.directories.projects).expanduser() / project_name)

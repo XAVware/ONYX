@@ -59,11 +59,3 @@ class Claude:
         except Exception as e:
             logger.error(f"Error in Claude API request: {str(e)}")
             raise
-
-def estimate_tokens(text: str) -> int:
-    """Estimate the number of tokens in a string of text.
-    This is a rough estimate - about 4 characters per token for English text."""
-    if not text:
-        return 0
-    return len(text) // 4
-

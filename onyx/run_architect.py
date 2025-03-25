@@ -5,7 +5,6 @@ from mermaid import setup_mermaid_docs, serve_docs
 from prompt_loader import get_system_prompt, format_prompt
 from onyx import get_logger, print_fancy
 from pathlib import Path
-from onyx import config
 from save_code_from_md import save_code_from_md
 
 logger = get_logger(__name__)
@@ -49,8 +48,6 @@ def generate_skeleton(mvp_content, diagrams_content, project_name):
 
 
 def run_architect(app_dir: Path):
-    # root_dir = Path(config.directories.projects)
-    # project_dir = Path(root_dir.expanduser() / project_name)
     planning_dir = Path(app_dir / "planning")
     project_name = app_dir.name
     # When the architect workflow begins, the MVP document should exist
