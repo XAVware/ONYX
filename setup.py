@@ -12,7 +12,9 @@ setup(
         "dotenv",
         "setuptools",
         "pyyaml",
-        "mkdocs"
+        "mkdocs",
+        "jupyter",
+        "notebook",
     ],
     author="Ryan Smetana",
     author_email="ryan.smetana@xavware.com",
