@@ -35,19 +35,17 @@ system_prompt: |
   - The file path must include the layer and file name.
   - File names must be unique throughout the whole project.
 
-  ## Project Directory Structure:
-  AppName/
-    | AppName/
-    |   | Models/
-    |   |   |_ .swift files
-    |   | Services/
-    |   |   |_ .swift files
-    |   | ViewModels/
-    |   |   |_ .swift files
-    |   | Views/
-    |   |   |_ .swift files
-    |   |_ AppNameApp.swift
-    |_ AppName.xcodeproj
+  ## Sample Response Directory Structure:
+  iOS_skeleton/
+    | Models/
+    |   |_ .swift files
+    | Services/
+    |   |_ .swift files
+    | ViewModels/
+    |   |_ .swift files
+    | Views/
+    |   |_ .swift files
+    |_ AppNameApp.swift
 
   ## Response format:
   With level two headers (##), provide a relative file path containing the layer and file name. Immediately follow it with a swift codeblock containing the content of the file.

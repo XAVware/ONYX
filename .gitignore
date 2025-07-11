@@ -54,3 +54,5 @@ resources/
 config.json
 
 .claude/
+/_output
+/_output/**

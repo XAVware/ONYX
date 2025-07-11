@@ -1,4 +1,3 @@
-
 from onyx import get_logger
 from pathlib import Path
 import re
@@ -18,6 +17,7 @@ def save_code_from_md(markdown: str, language: str, output_dir: Path) -> None:
     code_pattern = re.compile(
         rf"```{re.escape(language.lower())}\s*(.*?)```", re.DOTALL
     )
+
     count = 0
     for section in sections[1:]:
         lines = section.strip().split("\n", 1)
@@ -31,4 +31,5 @@ def save_code_from_md(markdown: str, language: str, output_dir: Path) -> None:
         file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.write_text(match.group(1).strip(), encoding="utf-8")
         count += 1
+
     logger.info(f"Parsed and saved {count} code blocks")
