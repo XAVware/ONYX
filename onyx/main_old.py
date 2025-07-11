@@ -1,17 +1,16 @@
+from onyx.ai_task import Claude
+# from xcode_service import create_project, build_xcode_project
+from onyx import get_logger, print_fancy
+from save_code_from_md import save_code_from_md
+from onyx import config
+
 import argparse
-import sys
+from typing import Optional
 from pathlib import Path
 
-# Add the parent directory to the path so we can import onyx modules
-script_dir = Path(__file__).resolve().parent.parent
-sys.path.append(str(script_dir))
-
-# Import onyx modules after path setup
-from onyx.ai_task import Claude  # noqa: E402
-from onyx import get_logger, print_fancy, config  # noqa: E402
-from onyx.save_code_from_md import save_code_from_md  # noqa: E402
-from onyx.prompt_loader import get_prompt_and_system, get_system_prompt, format_prompt  # noqa: E402
-from onyx.mermaid import setup_mermaid_docs, serve_docs  # noqa: E402
+from prompt_loader import get_prompt_and_system
+from prompt_loader import get_system_prompt, format_prompt
+from mermaid import setup_mermaid_docs, serve_docs
 
 logger = get_logger(__name__)
 
@@ -23,6 +22,32 @@ def parse_arguments():
     parser.add_argument("--project-dir", "-d", help="Project directory (default: Projects/[ProjectName])")
     parser.add_argument("--root-dir", "-r", help="Root directory for projects")
     return parser.parse_args()
+
+def get_dev_prompts(
+    layer: str,
+    diagrams_content: str,
+    file_content: str,
+    additional: Optional[str] = None,
+) -> tuple[str, str]:
+    """Get development prompts for specific layer using prompt loader."""
+    prompt_name = f"develop_{layer.lower()}"
+
+    system_prompt, prompt = get_prompt_and_system(
+        "developer",
+        prompt_name,
+        layer=layer,
+        diagrams_content=diagrams_content,
+        file_content=file_content,
+        additional=additional or "",
+    )
+    return system_prompt, prompt
+
+    
+def develop_layers(prompt, sys_prompt, project_dir: Path):
+    engineer = Claude()
+    response = engineer.send_prompt(prompt, system_prompt=sys_prompt, maximize=True)
+    save_code_from_md(markdown=response, language="swift", output_dir=project_dir / project_dir.name)
+
 
 def get_text_from_filepath(path: Path) -> str:
     if path.exists():
@@ -49,14 +74,16 @@ def main():
     plans_directory = project_directory / "plans"
     plans_directory.mkdir(parents=True, exist_ok=True)
 
-    # STEP 1: Create project directory structure
-    logger.info("STEP 1: Setting up project directory structure")
+    # STEP 1: Create Xcode project first
+    logger.info("STEP 1: Setting up initial Xcode project structure")
+    # create_project(app_dir)
 
     # STEP 3: Now proceed with the planning workflow
     logger.info("\nSTEP 2: Starting planning workflow")
     # Step 1: Generate or load Business Plan
     business_plan_path = plans_directory / "Business_Plan.md"
     business_plan = get_text_from_filepath(business_plan_path)
+
 
     if not business_plan:
         system, prompt = get_prompt_and_system(
@@ -75,6 +102,7 @@ def main():
         with open(business_plan_path, "w", encoding="utf-8") as file:
             file.write(business_plan)
 
+
     backlog_path = plans_directory / "Agile_Planner.md"
     backlog = get_text_from_filepath(backlog_path)
     if not backlog:
@@ -87,6 +115,7 @@ def main():
         backlog = Claude().send_prompt(prompt, system_prompt=system)
         with open(backlog_path, "w", encoding="utf-8") as file:
             file.write(backlog)
+
 
     # Step 1: Generate or load MVP Plan
     mvp_path = plans_directory / "MVP.md"
@@ -177,7 +206,6 @@ def main():
             prompt, system_prompt=system_prompt, maximize=True
         )
 
-        # Save raw response
         with open(skeleton_md_path, "w", encoding="utf-8") as file:
             file.write(skeleton_response)
 
@@ -185,6 +213,13 @@ def main():
                       language="swift", 
                       output_dir=project_directory / "ios_skeleton"
                       )
+
+    print_fancy("Planning workflow completed successfully!", "green", panel=True)
+    print_fancy(f"Project files created in: {project_directory}", "cyan")
+    print_fancy("Next steps:", "yellow")
+    print_fancy("1. Review the generated plans in the 'plans' directory", "white")
+    print_fancy("2. Run the development script: python3 onyx/develop.py <project_name>", "white")
+    print_fancy("3. Build and test your iOS application", "white")
 
 if __name__ == "__main__":
     main()
