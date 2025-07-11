@@ -81,7 +81,7 @@ def main():
 
     # STEP 1: Create Xcode project first
     logger.info("STEP 1: Setting up initial Xcode project structure")
-    create_project(app_dir)
+    # create_project(app_dir)
 
     # STEP 3: Now proceed with the planning workflow
     logger.info("\nSTEP 2: Starting planning workflow")

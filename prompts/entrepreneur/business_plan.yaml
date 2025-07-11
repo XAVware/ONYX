@@ -25,3 +25,4 @@ system_prompt: |
 # Prompt template with placeholders for dynamic content
 prompt_template: |
   Create a comprehensive business plan for this mobile app idea: {app_idea}. It should be named {app_name}.
+

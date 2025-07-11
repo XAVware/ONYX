@@ -52,3 +52,5 @@ ENV/
 __pycache__/
 resources/
 config.json
+
+.claude/
